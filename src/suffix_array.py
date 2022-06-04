@@ -56,6 +56,36 @@ def build_suffix_array(ref, pos_spec=True, n_jobs=None):
     return SA
 
 
+def longest_prefix(key, SA, max_len=np.inf):
+    """ standard LCS search, with an added homolog sequence
+        filter (masking) based on the maximal allowed prefix (max_len).
+    """
+    max_len = min([len(key), max_len])
+
+    where = search_array(key, SA)
+    where = min([max([0, where]), SA['pos'].size-1])
+
+    n = np.inf  # prefix length
+    while n > max_len:
+        if np.isfinite(n):
+            # get here in the >1 iter when exceeding max_len
+            SA['mask'] |= SA['ind'] == SA['ind'][pind]
+
+        nei = get_neighbors(SA, where)  # adjacent suffixes
+        if not len(nei):
+            pind = -1
+            pref = ''
+            return pref, pind
+
+        nei_count = [count_common(key, SA, n) for n in nei]
+        nei_max = np.argmax(nei_count)
+        pind = nei[nei_max]  # prefix index in SA
+        n = nei_count[nei_max]
+
+    pref = key[:nei_count[nei_max]]  # prefix string
+    return pref, pind
+
+
 def search_array(key, SA, top=None, bottom=None):
     """ using binary search. returns the position where key should be inserted
         to maintain sorting. """
@@ -94,6 +124,29 @@ def print_suffix_array(SA):
             for i in range(SA['pos'].size)]
 
 
+def get_neighbors(SA, ind):
+    # it would seem that in order for masking to work properly we need to
+    # look both up (new) and down (legacy) the found suffix.
+    nS = SA['pos'].size
+    lo = mask_suffix(SA, max([0, ind-1]), -1)  # next lower neighbor
+    hi = mask_suffix(SA, min([nS-1, ind+1]), +1)  # next upper neighbor
+
+    neis = [n for n in [lo, ind, hi]
+            if n is not None and not SA['mask'][n]]
+    return neis
+
+
+def count_common(key, SA, i):
+    suf = get_suffix(SA, i)[:len(key)]
+    key = key[:len(suf)]
+    if key == suf:
+        return len(key)
+    for j, (a, b) in enumerate(zip(key, suf)):
+        if a != b:
+            break
+    return j
+
+
 def is_key_greater_than(key, SA, i):
     return get_suffix(SA, i) < key
 
@@ -103,16 +156,17 @@ def get_suffix(SA, i):
 
 
 def mask_suffix(SA, ind, step, min_ind=0, max_ind=None):
-    # getting the next suffix (up/down) in SA that isn'tx masked.
+    # getting the next suffix (up/down) in SA that isn't masked.
     if 'mask' not in SA:
         return ind
     if max_ind is None:
         max_ind = SA['pos'].size
 
-    while not SA['mask'][ind] and (min_ind <= ind+step) and (ind+step < max_ind):
+    while SA['mask'][ind] and (min_ind <= ind+step) and (ind+step < max_ind):
+        # continue as long as masked (True)
         ind = ind + step
 
-    if not SA['mask'][ind]:
+    if SA['mask'][ind]:
         return None
 
     return ind
