@@ -73,7 +73,7 @@ the_code = {
 
 
 def nt2aa(seq_nt):
-    if type(seq_nt) is not str and isinstance(seq_nt, Iterable):
+    if is_str_iter(seq_nt):
         return [nt2aa(s) for s in seq_nt]
 
     return ''.join([the_code[seq_nt[i:i+3]]
@@ -97,3 +97,7 @@ def compare_seq(seq1, seq2):
     """
     return [[i, s1, s2] for i, (s1, s2) in
             enumerate(zip(seq1, seq2)) if s1 != s2]
+
+
+def is_str_iter(obj):
+    return not isinstance(obj, str) and isinstance(obj, Iterable)
