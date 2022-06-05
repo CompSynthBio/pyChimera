@@ -70,6 +70,7 @@ the_code = {
     'TTG': 'L',
     'TTT': 'F',
 }
+nt2codon_dict = {k: chr(i) for i, k in enumerate(the_code.keys())}
 
 
 def nt2aa(seq_nt):
@@ -81,12 +82,36 @@ def nt2aa(seq_nt):
                     for i in range(0, len(seq_nt), 3)])
 
 
-def nt2codon():
-    pass
+def nt2codon(seq):
+    """ converts a sequence in NT alphabet and returns a sequence in codon
+        alphabet, which is defined as follows:
+        the index of the character at a position equals the index of the codon in
+        the sorted list of all 64 triplets.
+        this allows for all string algorithms, including the Chimera approach, to
+        work seemlessly.
+        ignores partial codons.
+        Alon Diament, Tuller Lab, August 2018 (MATLAB), June 2022 (Python). """
+
+    if is_str_iter(seq):
+        return [nt2codon(s) for s in seq]
+
+    if not len(seq):
+        return ''
+
+    return ''.join([nt2codon_dict[seq[i:i+3]]
+                    for i in range(0, len(seq), 3)])
 
 
-def codon2nt():
-    pass
+def codon2nt(seq):
+    if is_str_iter(seq):
+        return [codon2nt(s) for s in seq]
+
+    if not len(seq):
+        return ''
+
+    codon_list = list(nt2codon_dict.keys())
+
+    return ''.join([codon_list[ord(c)] for c in seq])
 
 
 def rand_seq(n):
