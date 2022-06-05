@@ -1,6 +1,6 @@
 # Alon Diament, Tuller Lab, June 2022.
 
-from collections import defaultdict
+from collections import defaultdict, Counter
 from itertools import repeat
 from multiprocessing.pool import Pool
 
@@ -86,6 +86,27 @@ def longest_prefix(key, SA, max_len=np.inf):
     return pref, pind
 
 
+def most_freq_prefix(pref, SA_aa, ref_nt):
+    """ finds the most frequent *NT* prefix in [SA_aa] that codes the given 
+        AA prefix [pref].
+    """
+    n = len(pref)
+    left = search_array(pref, SA_aa)
+    right = search_array(pref + '~', SA_aa)
+    i_prefix = np.arange(left, right)
+    i_prefix = i_prefix[~SA_aa['mask'][i_prefix]]
+
+    all_blocks = [get_nt_prefix(SA_aa, ref_nt, i, n)
+                  for i in i_prefix]
+
+    block = Counter(sorted(all_blocks)).most_common(1)[0][0]  # first in lexicographic order
+    mostfreq = [i for i, b in zip(i_prefix, all_blocks) if block == b][0]
+    gene = SA_aa['ind'][mostfreq]
+    loc = SA_aa['pos'][mostfreq]
+
+    return gene, loc, block
+
+
 def search_array(key, SA, top=None, bottom=None):
     """ using binary search. returns the position where key should be inserted
         to maintain sorting. """
@@ -153,6 +174,12 @@ def is_key_greater_than(key, SA, i):
 
 def get_suffix(SA, i):
     return SA['ref'][SA['ind'][i]][SA['pos'][i]:]
+
+
+def get_nt_prefix(SA_aa, ref_nt, i, n):
+    seq = ref_nt[SA_aa['ind'][i]]
+    loc = SA_aa['pos'][i]
+    return seq[3*loc : 3*(loc+n)]
 
 
 def mask_suffix(SA, ind, step, min_ind=0, max_ind=None):
