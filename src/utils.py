@@ -76,6 +76,7 @@ def nt2aa(seq_nt):
     if is_str_iter(seq_nt):
         return [nt2aa(s) for s in seq_nt]
 
+    seq_nt = seq_nt.upper()
     return ''.join([the_code[seq_nt[i:i+3]]
                     for i in range(0, len(seq_nt), 3)])
 

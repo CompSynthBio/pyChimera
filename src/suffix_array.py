@@ -8,6 +8,8 @@ import numpy as np
 pref_type = np.uint32  # sequence length of up to 4294967295
 ref_index_type = np.uint16  # no. of sequences of up to 65535
 
+from .utils import is_str_iter
+
 
 def build_suffix_array(ref, pos_spec=True, n_jobs=None):
     """ returns a suffix array dict with the following keys:
@@ -22,14 +24,14 @@ def build_suffix_array(ref, pos_spec=True, n_jobs=None):
         sorted_start: indices of suffixes sorted by `pos`
         sorted_stop: indices of suffixes sorted by `pos_from_stop`
     """
-    # TODO: sequence assertion
-    if type(ref) not in (list, np.array):
+    if not is_str_iter(ref):
         ref = [ref]
 
     SA = []
-    for i, text in enumerate(ref):
+    for i in range(len(ref)):
+        ref[i] = ref[i].upper()
         SA.append(np.vstack(
-            [build_single_suffix_array(text), len(text)*[i]]
+            [build_single_suffix_array(ref[i]), len(ref[i])*[i]]
             ))
 
     # merge-sort style
