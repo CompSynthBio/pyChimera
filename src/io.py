@@ -6,6 +6,7 @@ from scipy.io import savemat, loadmat
 
 def save_SA(SA, path):
     SA.pop('mask', None)
+    SA.pop('homologs', None)
     np.savez_compressed(path, **SA)
 
 

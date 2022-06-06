@@ -60,18 +60,18 @@ def build_suffix_array(ref, pos_spec=True, n_jobs=None):
 
 def longest_prefix(key, SA, max_len=np.inf):
     """ standard LCS search, with an added homolog sequence
-        filter (masking) based on the maximal allowed prefix (max_len).
+        filter (masking) based on the maximal allowed prefix `max_len`.
     """
     max_len = min([len(key), max_len])
 
-    where = search_array(key, SA)
+    where = search_suffix(key, SA)
     where = min([max([0, where]), SA['pos'].size-1])
 
     n = np.inf  # prefix length
     while n > max_len:
         if np.isfinite(n):
             # get here in the >1 iter when exceeding max_len
-            SA['mask'] |= SA['ind'] == SA['ind'][pind]
+            SA['homologs'] |= SA['ind'] == SA['ind'][pind]
 
         nei = get_neighbors(SA, where)  # adjacent suffixes
         if not len(nei):
@@ -89,14 +89,15 @@ def longest_prefix(key, SA, max_len=np.inf):
 
 
 def most_freq_prefix(pref, SA_aa, ref_nt):
-    """ finds the most frequent *NT* prefix in [SA_aa] that codes the given 
-        AA prefix [pref].
+    """ finds the most frequent *NT* prefix in `SA_aa` that codes the given 
+        AA prefix `pref`.
     """
     n = len(pref)
-    left = search_array(pref, SA_aa)
-    right = search_array(pref + '~', SA_aa)
+    left = search_suffix(pref, SA_aa)
+    right = search_suffix(pref + '~', SA_aa)
     i_prefix = np.arange(left, right)
     i_prefix = i_prefix[~SA_aa['mask'][i_prefix]]
+    i_prefix = i_prefix[~SA_aa['homologs'][i_prefix]]
 
     all_blocks = [get_nt_prefix(SA_aa, ref_nt, i, n)
                   for i in i_prefix]
@@ -109,7 +110,38 @@ def most_freq_prefix(pref, SA_aa, ref_nt):
     return gene, loc, block
 
 
-def search_array(key, SA, top=None, bottom=None):
+def select_window(SA, win_params, pos_start, pos_stop):
+    """ filter only relevant suffixes, i.e.:
+        1. starting at the same distance from start as `pos_start`, within
+        half a window size; or:
+        2. starting at the same distance from stop as `pos_stop`, within
+        half a window size.
+
+        Alon Diament, Tuller Lab, Januray 2018 (MATLAB), June 2022 (Python).
+    """
+    max_dist = win_params['size'] / 2
+    SA['mask'] = np.ones(SA['pos'].size, dtype=bool)  # init: mask all
+
+    if win_params['by_start']:
+        win_start = [pos_start - max_dist + win_params['center'],
+                     pos_start + max_dist + win_params['center'] - 1]  # relative to start codon
+        win_start = np.ceil(win_start)
+
+        valid = search_cood(SA, 'pos', 'sorted_start', win_start[0], win_start[1])
+        SA['mask'][valid] = False
+        win_params['win_start'] = win_start
+
+    if win_params['by_stop']:
+        win_stop = [pos_stop - max_dist + win_params['center'],
+                    pos_stop + max_dist + win_params['center'] - 1]  # relative to stop codon
+        win_stop = np.ceil(win_stop)
+
+        valid = search_cood(SA, 'pos_from_stop', 'sorted_stop', win_stop[0], win_stop[1])
+        SA['mask'][valid] = False
+        win_params['win_stop'] = win_stop
+
+
+def search_suffix(key, SA, top=None, bottom=None):
     """ using binary search. returns the position where key should be inserted
         to maintain sorting. """
     if top is None:
@@ -134,6 +166,42 @@ def search_array(key, SA, top=None, bottom=None):
     return top
 
 
+def search_cood(SA, val_col, idx_col, start, stop):
+    """ search the suffix coordinates using binary search and the
+        `sorted_start` / `sorted_stop` fields.
+
+        see also: select_window
+    """
+    if start > stop:
+        raise Exception('search_cood: start > stop')
+
+    low = 0
+    high = SA['pos'].size
+    while low < high:
+        mid = (low + high) // 2
+
+        if SA[val_col][SA[idx_col][mid]] < start:
+            low = mid + 1
+        else:
+            high = mid
+    i = low
+
+    high = SA['pos'].size
+    while low < high:
+        mid = (low + high) // 2
+        if SA[val_col][SA[idx_col][mid]] > stop:
+            high = mid
+        else:
+            low = mid + 1
+
+    if stop == SA[val_col][SA[idx_col][-1]]:
+        j = low
+    else:
+        j = low - 1
+
+    return SA[idx_col][i:j+1]
+
+
 def test_suffix_array(SA):
     # assert that all suffixes are sorted
     n = SA['pos'].size
@@ -155,7 +223,8 @@ def get_neighbors(SA, ind):
     hi = mask_suffix(SA, min([nS-1, ind+1]), +1)  # next upper neighbor
 
     neis = [n for n in [lo, ind, hi]
-            if n is not None and not SA['mask'][n]]
+            if n is not None
+            and not SA['mask'][n] and not SA['homologs'][n]]
     return neis
 
 
@@ -186,16 +255,17 @@ def get_nt_prefix(SA_aa, ref_nt, i, n):
 
 def mask_suffix(SA, ind, step, min_ind=0, max_ind=None):
     # getting the next suffix (up/down) in SA that isn't masked.
-    if 'mask' not in SA:
+    if 'mask' not in SA and 'homologs' not in SA:
         return ind
     if max_ind is None:
         max_ind = SA['pos'].size
 
-    while SA['mask'][ind] and (min_ind <= ind+step) and (ind+step < max_ind):
+    while (SA['mask'][ind] or SA['homologs'][ind]) and \
+            (min_ind <= ind+step) and (ind+step < max_ind):
         # continue as long as masked (True)
         ind = ind + step
 
-    if SA['mask'][ind]:
+    if SA['mask'][ind] or SA['homologs'][ind]:
         return None
 
     return ind
