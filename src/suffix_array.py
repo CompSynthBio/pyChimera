@@ -155,42 +155,6 @@ def search_suffix(key, SA, top=None, bottom=None):
     return top
 
 
-def search_cood(SA, val_col, idx_col, start, stop):
-    """ search the suffix coordinates using binary search and the
-        `sorted_start` / `sorted_stop` fields.
-
-        see also: select_window
-    """
-    if start > stop:
-        raise Exception('search_cood: start > stop')
-
-    low = 0
-    high = SA['pos'].size
-    while low < high:
-        mid = (low + high) // 2
-
-        if SA[val_col][SA[idx_col][mid]] < start:
-            low = mid + 1
-        else:
-            high = mid
-    i = low
-
-    high = SA['pos'].size
-    while low < high:
-        mid = (low + high) // 2
-        if SA[val_col][SA[idx_col][mid]] > stop:
-            high = mid
-        else:
-            low = mid + 1
-
-    if stop == SA[val_col][SA[idx_col][-1]]:
-        j = low
-    else:
-        j = low - 1
-
-    return SA[idx_col][i:j+1]
-
-
 def test_suffix_array(SA):
     # assert that all suffixes are sorted
     n = SA['pos'].size
