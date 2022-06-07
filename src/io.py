@@ -22,8 +22,7 @@ def save_matlab_SA(SA, path):
     savemat(path,
             {'SA': np.vstack([SA['pos'] + 1, SA['ind'] + 1,
                               np.ones(SA['pos'].size),
-                              SA['pos_from_stop'],
-                              SA['sorted_start'] + 1, SA['sorted_stop'] + 1]).T,
+                              SA['pos_from_stop']]).T,
              'ref': np.array([[np.array(r)] for r in SA['ref']], dtype=object)})
 
 
@@ -34,6 +33,4 @@ def load_matlab_SA(path):
     return {'ref': [r[0] for r in np.ravel(SA_mat['ref'])],
             'ind': SA_mat['SA'][:, 1] - 1,
             'pos': SA_mat['SA'][:, 0] - 1,
-            'pos_from_start': SA_mat['SA'][:, 3] - 1,
-            'sorted_start': SA_mat['SA'][:, 4] - 1,
-            'sorted_stop': SA_mat['SA'][:, 5]}
+            'pos_from_stop': SA_mat['SA'][:, 3] - 1}

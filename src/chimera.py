@@ -3,8 +3,8 @@
 import numpy as np
 import pandas as pd
 
-from .suffix_array import build_suffix_array, longest_prefix, most_freq_prefix, select_window
-from .utils import *
+from .suffix_array import longest_prefix, most_freq_nt_prefix, select_window
+from .utils import nt2aa
 
 def_win_params = {'size': 40, 'center': 0, 'by_start': True, 'by_stop': True}
 
@@ -30,8 +30,9 @@ def calc_cARS(key, SA, win_params=None, max_len=np.inf, max_pos=1):
     n = len(key)
     cars_vec = np.zeros(n)
     cars_origin = -np.ones(n, dtype=np.int)
-    SA['mask'] = np.zeros(SA['pos'].size, dtype=bool)  # empty mask
-    SA['homologs'] = SA['mask'].copy()
+    SA['homologs'] = set()  # empty mask
+    SA.pop('win_start', None)
+    SA.pop('win_stop', None)
 
     pos_queue = np.ones(n, dtype=bool)
     while np.any(pos_queue):
@@ -50,7 +51,7 @@ def calc_cARS(key, SA, win_params=None, max_len=np.inf, max_pos=1):
         same = cars_origin == cars_origin[pos]
         if (np.mean(same) > max_pos) and (n > 1):
             # mask origin ref in SA and reset all related positions
-            SA['homologs'][SA['ind'] == cars_origin[pos]] = True
+            SA['homologs'].add(cars_origin[pos])
             pos_queue[same] = True
             cars_origin[same] = -1
         else:
@@ -76,8 +77,7 @@ def calc_cMap(target_aa, SA_aa, ref_nt, max_len=np.inf, max_pos=1):
     n = len(target_aa)
     B = []  # Chimera blocks
     cmap_origin = -np.ones((2, n), dtype=np.int)
-    SA_aa['mask'] = np.zeros(SA_aa['pos'].size, dtype=bool)  # empty mask
-    SA_aa['homologs'] = SA_aa['mask'].copy()
+    SA_aa['homologs'] = set()  # empty mask
 
     pos = 0  # position in target
     while pos < n:
@@ -86,7 +86,7 @@ def calc_cMap(target_aa, SA_aa, ref_nt, max_len=np.inf, max_pos=1):
             raise Exception('empty block at {}, suffix starts with: "{}"'
                             .format(pos, target_aa[pos:pos+10]))
 
-        gene, loc, block = most_freq_prefix(block_aa, SA_aa, ref_nt)
+        gene, loc, block = most_freq_nt_prefix(block_aa, SA_aa, ref_nt)
         m = len(block_aa)
         cmap_origin[0, pos:pos+m] = gene
         cmap_origin[1, pos:pos+m] = len(B)
@@ -95,7 +95,7 @@ def calc_cMap(target_aa, SA_aa, ref_nt, max_len=np.inf, max_pos=1):
         same = cmap_origin[0] == cmap_origin[0, pos]
         if (np.mean(same) > max_pos) and (n > 1):
             # mask origin ref in SA and reset all related positions
-            SA_aa['homologs'][SA_aa['ind'] == cmap_origin[0, pos]] = True
+            SA_aa['homologs'].add(cmap_origin[0, pos])
             # backtrack: remove all blocks that appear after the
             # first occurrence of origin ref 
             pos = np.flatnonzero(same)[0]
