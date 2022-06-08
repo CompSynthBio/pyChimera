@@ -62,7 +62,7 @@ def calc_cARS(key, SA, win_params=None, max_len=np.inf, max_pos=1):
     return cars
 
 
-def calc_cMap(target_aa, SA_aa, ref_nt, max_len=np.inf, max_pos=1):
+def calc_cMap(target_aa, SA_aa, ref_nt, win_params=None, max_len=np.inf, max_pos=1):
     """ compute an optimal NT sequence for a target AA sequence based on
         the ChimeraMap (Zur and Tuller, 2015) algorithm.
         includes heuristics for homologous sequences (Diament et al., 2019).
@@ -74,6 +74,8 @@ def calc_cMap(target_aa, SA_aa, ref_nt, max_len=np.inf, max_pos=1):
 
         Alon Diament / Tuller Lab, July 2015 (MATLAB), June 2022 (Python).
     """
+    win_params = init_win_params(win_params)
+
     n = len(target_aa)
     B = []  # Chimera blocks
     cmap_origin = -np.ones((2, n), dtype=np.int)
@@ -81,6 +83,9 @@ def calc_cMap(target_aa, SA_aa, ref_nt, max_len=np.inf, max_pos=1):
 
     pos = 0  # position in target
     while pos < n:
+        if win_params is not None:
+            select_window(SA_aa, win_params, pos, pos-n)
+
         block_aa = longest_prefix(target_aa[pos:], SA_aa, max_len)[0]
         if not len(block_aa):
             raise Exception('empty block at {}, suffix starts with: "{}"'
@@ -97,7 +102,7 @@ def calc_cMap(target_aa, SA_aa, ref_nt, max_len=np.inf, max_pos=1):
             # mask origin ref in SA and reset all related positions
             SA_aa['homologs'].add(cmap_origin[0, pos])
             # backtrack: remove all blocks that appear after the
-            # first occurrence of origin ref 
+            # first occurrence of origin ref
             pos = np.flatnonzero(same)[0]
             blk = cmap_origin[1, pos] - 1
             B = B[:blk + 1]
