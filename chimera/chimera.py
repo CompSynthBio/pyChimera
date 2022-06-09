@@ -74,7 +74,7 @@ def calc_cARS(key, SA, win_params=None, max_len=np.inf, max_pos=1, n_jobs=None):
 def calc_cMap(target_aa, SA_aa, ref_nt, win_params=None, max_len=np.inf, max_pos=1, n_jobs=None):
     """ compute an optimal NT sequence for a target AA sequence based on
         the ChimeraMap (Zur and Tuller, 2015) algorithm. when `win_params`
-        is given, compute the position-specific ChimeraARS (Diament et al., 2019).
+        is given, compute the position-specific ChimeraMap (Diament et al., 2019).
         includes heuristics for homologous sequences (Diament et al., 2019).
 
         win_params: an optional dictionary with any of the fields
