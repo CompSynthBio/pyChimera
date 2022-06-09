@@ -1,6 +1,6 @@
 # pyChimera
 
-<img src="images/logo.png" width="100">
+<img src="images/logo.png" width="150">
 
 this is a Python implementation for the Chimera algorithms, first proposed by the late Dr. Hadas Zur and Tamir Tuller (2015), and extended by (Diament et al., 2019).
 
@@ -14,7 +14,7 @@ Zure and Tuller. Exploiting hidden information interleaved in the redundancy of 
 
 ## Benchmark: Python vs. MATLAB
 
-the following table shows the runtime in seconds for each algorithm, when using the Python package with multiprocessing, on a single core, or in MATLAB. this was run on a 2015 MacBook Pro.
+the following table shows the runtime in seconds for each algorithm, when using the Python package with multiprocessing, on a single core, or in MATLAB. this test was done on a 2015 MacBook Pro.
 
 | algorithm               | Python-multi | Python-single | MATLAB |
 |-------------------------|--------------|---------------|--------|
