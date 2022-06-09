@@ -1,15 +1,18 @@
 # Alon Diament, Tuller Lab, June 2022.
 
+from itertools import repeat
+from multiprocessing.pool import Pool
+
 import numpy as np
 import pandas as pd
 
 from .suffix_array import longest_prefix, most_freq_nt_prefix, select_window
-from .utils import nt2aa
+from .utils import is_str_iter, nt2aa
 
 def_win_params = {'size': 40, 'center': 0, 'by_start': True, 'by_stop': True}
 
 
-def calc_cARS(key, SA, win_params=None, max_len=np.inf, max_pos=1):
+def calc_cARS(key, SA, win_params=None, max_len=np.inf, max_pos=1, n_jobs=None):
     """ compute the ChimeraARS (Average Repetitive Substring, Zur and Tuller,
         2015) for a given key. when `win_params` is given, compute the
         position-specific ChimeraARS (Diament et al., 2019).
@@ -25,14 +28,20 @@ def calc_cARS(key, SA, win_params=None, max_len=np.inf, max_pos=1):
 
         Alon Diament / Tuller Lab, July 2015 (MATLAB), June 2022 (Python).
     """
+    if is_str_iter(key):
+        with Pool(n_jobs) as pool:
+            args = zip(key, repeat(SA), repeat(win_params),
+                       repeat(max_len), repeat(max_pos), repeat(1))
+            return pool.starmap(calc_cARS, args)
+
     win_params = init_win_params(win_params)
+    SA.pop('win_start', None)
+    SA.pop('win_stop', None)
 
     n = len(key)
     cars_vec = np.zeros(n)
     cars_origin = -np.ones(n, dtype=np.int)
     SA['homologs'] = set()  # empty mask
-    SA.pop('win_start', None)
-    SA.pop('win_stop', None)
 
     pos_queue = np.ones(n, dtype=bool)
     while np.any(pos_queue):
@@ -62,7 +71,7 @@ def calc_cARS(key, SA, win_params=None, max_len=np.inf, max_pos=1):
     return cars
 
 
-def calc_cMap(target_aa, SA_aa, ref_nt, win_params=None, max_len=np.inf, max_pos=1):
+def calc_cMap(target_aa, SA_aa, ref_nt, win_params=None, max_len=np.inf, max_pos=1, n_jobs=None):
     """ compute an optimal NT sequence for a target AA sequence based on
         the ChimeraMap (Zur and Tuller, 2015) algorithm. when `win_params`
         is given, compute the position-specific ChimeraARS (Diament et al., 2019).
@@ -78,6 +87,12 @@ def calc_cMap(target_aa, SA_aa, ref_nt, win_params=None, max_len=np.inf, max_pos
 
         Alon Diament / Tuller Lab, July 2015 (MATLAB), June 2022 (Python).
     """
+    if is_str_iter(target_aa):
+        with Pool(n_jobs) as pool:
+            args = zip(target_aa, repeat(SA_aa), repeat(ref_nt), repeat(win_params),
+                       repeat(max_len), repeat(max_pos), repeat(1))
+            return pool.starmap(calc_cMap, args)
+
     win_params = init_win_params(win_params)
     SA_aa.pop('win_start', None)
     SA_aa.pop('win_stop', None)
