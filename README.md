@@ -14,7 +14,7 @@ Zure and Tuller. Exploiting hidden information interleaved in the redundancy of 
 
 ## Benchmark: Python vs. MATLAB
 
-the following table shows the time in seconds for each algorithm to run, when using the Python package with multiprocessing, on a single core, or in MATLAB. this was run on a 2015 MacBook Pro.
+the following table shows the runtime in seconds for each algorithm, when using the Python package with multiprocessing, on a single core, or in MATLAB. this was run on a 2015 MacBook Pro.
 
 | algorithm               | Python-multi | Python-single | MATLAB |
 |-------------------------|--------------|---------------|--------|
