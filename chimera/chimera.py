@@ -79,6 +79,8 @@ def calc_cMap(target_aa, SA_aa, ref_nt, win_params=None, max_len=np.inf, max_pos
         Alon Diament / Tuller Lab, July 2015 (MATLAB), June 2022 (Python).
     """
     win_params = init_win_params(win_params)
+    SA_aa.pop('win_start', None)
+    SA_aa.pop('win_stop', None)
 
     n = len(target_aa)
     B = []  # Chimera blocks
