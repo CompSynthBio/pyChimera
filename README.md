@@ -99,10 +99,10 @@ save and load suffix arrays, in Python / MATLAB formats.
 
 ```python
 save_SA(path, SA)
-SA = load_SA(path, SA)
+SA = load_SA(path)
 
 # export to MATLAB
-save_matlab_SA(path)
+save_matlab_SA(path, SA)
 
 # import from MATLAB
 SA = load_matlab_SA(path)
