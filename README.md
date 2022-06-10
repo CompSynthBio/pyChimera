@@ -2,7 +2,7 @@
 
 <img src="images/logo.png" width="150">
 
-this is a Python implementation for the Chimera algorithms, first proposed by the late Dr. Hadas Zur and Tamir Tuller (2015), and extended by (Diament et al., 2019). these algorithms can be used for unsupervised prediction of gene expression based solely on the coding sequence of genes, and for designing optimized genes for expression.
+this is a Python implementation of the Chimera algorithms, first proposed by the late Dr. Hadas Zur and Tamir Tuller (2015), and extended by (Diament et al., 2019). these algorithms can be used to predict the expression of a gene in a unsuperised manner, based solely on the coding sequence of the gene and the genome of the host. it can also be used to design genes for optimized expression in any host organism.
 
 for the app and MATLAB implementation see the [relevant repository](https://github.com/alondmnt/chimera/).
 
@@ -14,7 +14,7 @@ Zure and Tuller. Exploiting hidden information interleaved in the redundancy of 
 
 ## Benchmark: Python vs. MATLAB
 
-the following table shows the runtime in seconds for each algorithm, when using the Python package with multiprocessing, on a single core, or in MATLAB. this test was done on a 2015 MacBook Pro.
+the following table shows the runtime in seconds for each algorithm, when using the Python package with multiprocessing, a single core, or in MATLAB. this test was done on a 2015 MacBook Pro.
 
 | algorithm               | Python-multi | Python-single | MATLAB |
 |-------------------------|--------------|---------------|--------|
