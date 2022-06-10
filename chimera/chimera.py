@@ -136,7 +136,7 @@ def calc_cMap(target_aa, SA_aa, ref_nt, win_params=None, max_len=np.inf, max_pos
     if nt2aa(target_opt) != target_aa:
         raise Exception('non-syonymous optimization')
 
-    return target_opt
+    return target_opt  #, pd.DataFrame(B, columns=['gene', 'loc', 'block'])
 
 
 def init_win_params(win_params):

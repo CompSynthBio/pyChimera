@@ -151,7 +151,7 @@ def search_suffix(key, SA, top=None, bottom=None):
         top = skip_masked_suffix(SA, top, +1)  # forward to next unmasked suffix
     if top == nS and is_suffix_masked(SA, top):
         top = skip_masked_suffix(SA, top, -1)  # back to last unmasked suffix
-    if top == nS and is_key_greater_than(key, SA, top):
+    if is_key_greater_than(key, SA, top):
         top += 1  # case: end of SA
 
     return top
