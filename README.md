@@ -18,9 +18,9 @@ the following table shows the runtime in seconds for each algorithm, when using 
 
 | algorithm               | Python-multi | Python-single | MATLAB |
 |-------------------------|--------------|---------------|--------|
-| cARS*                   | 137          | 404           | 1751   |
-| cMap*                   | 39           | 115           | 328    |
-| Position-Specific cMap* | 42           | 134           | 2042   |
+| cARS*                   | 137          | 404           | 756    |
+| cMap*                   | 39           | 115           | 201    |
+| Position-Specific cMap* | 42           | 134           | 326    |
 | build suffix array**    | 14.4         | 28.3          | 4.4    |
 
 (*) whole genome run on *E. coli* genes with homologs filtering.
