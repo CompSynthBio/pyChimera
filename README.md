@@ -68,6 +68,8 @@ SA_cod = build_suffix_array(ref_cod)  # run once for the reference and store som
 # Chimera ARS (cARS)
 cars = calc_cARS(target_cod, SA_cod,
     max_len=max_len, max_pos=max_pos)
+# cARS returns a score that increases as the target gene is
+# more similar / adapted to the reference sequences
 
 # Position-Specific Chimera ARS (PScARS)
 cars = calc_cARS(target_cod, SA_cod,
@@ -88,7 +90,7 @@ SA_aa = build_suffix_array(ref_aa)
 target_optim_nt = calc_cMap(target_aa, SA_aa, ref_nt,
     max_len=max_len, max_pos=max_pos)
 # in addition, the reference set in NT alphabet is provided
-# the result is an optimized nucleotide sequence of the gene
+# cMap returns an optimized nucleotide sequence of the gene
 
 # Position-Specific Chimera Map (PScMap)
 target_optim_nt = calc_cMap(target_aa, SA_aa, ref_nt,
