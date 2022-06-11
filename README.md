@@ -24,7 +24,7 @@ the following table shows the runtime in seconds for each algorithm, when using 
 | Position-Specific cMap* | 42           | 134           | 326    |
 | build suffix array**    | 14.4         | 28.3          | 4.4    |
 
-(*) whole genome run on *E. coli* genes with homologs filtering.
+(*) whole genome run on 4139 *E. coli* genes, including homologs filtering.
 
 (**) in MATLAB this is implemented using compiled C-code.
 
