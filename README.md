@@ -74,18 +74,21 @@ cars = calc_cARS(target_cod, SA_cod,
     win_params=win_params, max_len=max_len, max_pos=max_pos)
 ```
 
-the function also accepts an iterable of strings as the target sequence, and uses multiprocessing to run the batch efficiently.
+this example demonstrates a run on the codon alphabet (the recommended approach for analyzing coding sequences), but cARS supports any of the 3 options (nt, aa, codon). the function also accepts an iterable of strings as the target sequence, and uses multiprocessing to run the batch efficiently.
 
 ### Design
 
 similarly, running cMap or PScMap requires two steps:
 
 ```python
-SA_aa = build_suffix_array(ref_aa)  # run once for the reference and store somewhere (see: save_SA)
+SA_aa = build_suffix_array(ref_aa)
+# cMap must be given a suffix array based on the AA alphabet
 
 # Chimera Map (cMap)
 target_optim_nt = calc_cMap(target_aa, SA_aa, ref_nt,
     max_len=max_len, max_pos=max_pos)
+# in addition, the reference set in NT alphabet is provided
+# the result is an optimized nucleotide sequence of the gene
 
 # Position-Specific Chimera Map (PScMap)
 target_optim_nt = calc_cMap(target_aa, SA_aa, ref_nt,
