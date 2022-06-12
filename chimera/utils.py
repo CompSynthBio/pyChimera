@@ -78,8 +78,16 @@ def nt2aa(seq_nt):
         return [nt2aa(s) for s in seq_nt]
 
     seq_nt = seq_nt.upper()
-    return ''.join([the_code[seq_nt[i:i+3]]
-                    for i in range(0, len(seq_nt), 3)])
+    seq_aa = ''.join([the_code[seq_nt[i:i+3]]
+                      for i in range(0, len(seq_nt), 3)
+                      if seq_nt[i:i+3] in the_code])
+
+    n_nt = len(seq_nt) / 3
+    n_aa = len(seq_aa)
+    if n_aa < n_nt:
+        print(f'nt2aa: ignored {n_nt-n_aa} ambiguous AA.')
+
+    return seq_aa
 
 
 def nt2codon(seq):
@@ -98,8 +106,16 @@ def nt2codon(seq):
     if not len(seq):
         return ''
 
-    return ''.join([nt2codon_dict[seq[i:i+3]]
-                    for i in range(0, len(seq), 3)])
+    seq_cod = ''.join([nt2codon_dict[seq[i:i+3]]
+                       for i in range(0, len(seq), 3)
+                       if seq[i:i+3] in nt2codon_dict])
+
+    n_nt = len(seq) / 3
+    n_cod = len(seq_cod)
+    if n_cod < n_nt:
+        print(f'nt2codon: ignored {n_nt-n_cod} ambiguous codons.')
+
+    return seq_cod
 
 
 def codon2nt(seq):
