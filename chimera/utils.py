@@ -73,9 +73,15 @@ the_code = {
 nt2codon_dict = {k: chr(i) for i, k in enumerate(the_code.keys())}
 
 
-def nt2aa(seq_nt):
+def nt2aa(seq_nt, validate_seq=True):
     if is_str_iter(seq_nt):
-        return [nt2aa(s) for s in seq_nt]
+        # returning an empty string for bad seqs to preserve indexing
+        seq_aa = [nt2aa(s)
+                  if not validate_seq or
+                  ((len(s) % 3 == 0) and ('N' not in s.upper()))
+                  else ''
+                  for s in seq_nt]
+        return seq_aa
 
     seq_nt = seq_nt.upper()
     seq_aa = ''.join([the_code[seq_nt[i:i+3]]
@@ -90,7 +96,7 @@ def nt2aa(seq_nt):
     return seq_aa
 
 
-def nt2codon(seq):
+def nt2codon(seq_nt, validate_seq=True):
     """ converts a sequence in NT alphabet and returns a sequence in codon
         alphabet, which is defined as follows:
         the index of the character at a position equals the index of the codon in
@@ -100,17 +106,23 @@ def nt2codon(seq):
         ignores partial codons.
         Alon Diament, Tuller Lab, August 2018 (MATLAB), June 2022 (Python). """
 
-    if is_str_iter(seq):
-        return [nt2codon(s) for s in seq]
+    if is_str_iter(seq_nt):
+        # returning an empty string for bad seqs to preserve indexing
+        seq_cod = [nt2codon(s)
+                   if not validate_seq or
+                   ((len(s) % 3 == 0) and ('N' not in s.upper()))
+                   else ''
+                   for s in seq_nt]
+        return seq_cod 
 
-    if not len(seq):
+    if not len(seq_nt):
         return ''
 
-    seq_cod = ''.join([nt2codon_dict[seq[i:i+3]]
-                       for i in range(0, len(seq), 3)
-                       if seq[i:i+3] in nt2codon_dict])
+    seq_cod = ''.join([nt2codon_dict[seq_nt[i:i+3]]
+                       for i in range(0, len(seq_nt), 3)
+                       if seq_nt[i:i+3] in nt2codon_dict])
 
-    n_nt = len(seq) / 3
+    n_nt = len(seq_nt) / 3
     n_cod = len(seq_cod)
     if n_cod < n_nt:
         print(f'nt2codon: ignored {n_nt-n_cod} ambiguous codons.')
@@ -118,16 +130,16 @@ def nt2codon(seq):
     return seq_cod
 
 
-def codon2nt(seq):
-    if is_str_iter(seq):
-        return [codon2nt(s) for s in seq]
+def codon2nt(seq_cod):
+    if is_str_iter(seq_cod):
+        return [codon2nt(s) for s in seq_cod]
 
-    if not len(seq):
+    if not len(seq_cod):
         return ''
 
     codon_list = list(nt2codon_dict.keys())
 
-    return ''.join([codon_list[ord(c)] for c in seq])
+    return ''.join([codon_list[ord(c)] for c in seq_cod])
 
 
 def rand_seq(n):

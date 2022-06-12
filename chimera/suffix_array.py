@@ -235,6 +235,10 @@ def merge_arrays(SA1, SA2, ref):
 
     n1 = SA1.shape[1]
     n2 = SA2.shape[1]
+    if n1 == 0:
+        return SA2
+    if n2 == 0:
+        return SA1
     outSA = np.zeros((2, n1 + n2), dtype=pref_type)
 
     suf1 = get_raw_suffix(SA1, i1, ref) 
