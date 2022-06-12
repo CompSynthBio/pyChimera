@@ -28,21 +28,17 @@ def build_suffix_array(ref, pos_spec=True, n_jobs=None):
     if not is_str_iter(ref):
         ref = [ref]
 
-    SA = []
-    for i in range(len(ref)):
-        ref[i] = ref[i].upper()
-        SA.append(np.vstack(
-            [build_single_suffix_array(ref[i]), len(ref[i])*[i]]
-            ))
-
-    # merge-sort style
     with Pool(n_jobs) as pool:
+        # SA per reference sequence
+        SA = pool.starmap(build_single_suffix_array, enumerate(ref))
+        # aggregate, merge-sort style
         while len(SA) > 1:
             merged_SA = pool.starmap(
                 merge_arrays, zip(SA[0::2], SA[1::2], repeat(ref)))
             if len(merged_SA) < len(SA)/2:
                 merged_SA.append(SA[-1])
             SA = merged_SA
+
     SA = {'ref': ref,
           'ind': SA[0][1].astype(ref_index_type),
           'pos': SA[0][0].astype(pref_type)}
@@ -269,9 +265,13 @@ def get_raw_suffix(SA, i, ref):
     return ref[SA[1, i]][SA[0, i]:]
 
 
+def build_single_suffix_array(i, str):
+    return np.vstack([build_suffix_array_ManberMyers(str), len(str)*[i]])
+
+
 # suffix_array_ManberMyers from:
 # https://github.com/benfulton/Algorithmic-Alley/blob/master/AlgorithmicAlley/SuffixArrays/sa.py
-def build_single_suffix_array(str):
+def build_suffix_array_ManberMyers(str):
     result = []
     def sort_bucket(str, bucket, order=1):
         d = defaultdict(list)

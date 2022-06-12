@@ -22,7 +22,7 @@ the following table shows the runtime in seconds for each algorithm, when using 
 | cMap*                   | 39           | 115           | 201    |
 | Position-Specific cARS* | 229          | 626           | 1403   |
 | Position-Specific cMap* | 42           | 134           | 326    |
-| build suffix array**    | 14.4         | 28.3          | 4.4    |
+| build suffix array**    | 12.8         | 28.3          | 4.4    |
 
 (*) whole genome run on 4139 *E. coli* genes, including homologs filtering.
 
