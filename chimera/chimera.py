@@ -2,7 +2,6 @@
 
 from itertools import repeat, starmap
 from multiprocessing.pool import Pool
-from warnings import warn
 
 import numpy as np
 import pandas as pd
@@ -43,6 +42,8 @@ def calc_cARS(key, SA, win_params=None, max_len=np.inf, max_pos=1, n_jobs=None):
     SA.pop('win_stop', None)
 
     n = len(key)
+    if n == 0:
+        return np.nan
     cars_vec = np.zeros(n)
     cars_origin = -np.ones(n, dtype=np.int)
     SA['homologs'] = set()  # empty mask
@@ -58,8 +59,8 @@ def calc_cARS(key, SA, win_params=None, max_len=np.inf, max_pos=1, n_jobs=None):
         cars_vec[pos] = len(block)
 
         if not len(block):
-            warn('empty substring at {}/{}, suffix starts with: "{}"'
-                .format(pos, len(key), key[pos:pos+10]))
+            print('empty substring at {}/{}, suffix starts with: "{}"'
+                  .format(pos, len(key), key[pos:pos+10]))
             cars_origin[pos] = -1
             pos_queue[pos] = False
             continue
