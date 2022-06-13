@@ -1,6 +1,6 @@
 # Alon Diament, Tuller Lab, June 2022.
 
-from itertools import repeat
+from itertools import repeat, starmap
 from multiprocessing.pool import Pool
 from warnings import warn
 
@@ -33,8 +33,10 @@ def calc_cARS(key, SA, win_params=None, max_len=np.inf, max_pos=1, n_jobs=None):
         with Pool(n_jobs) as pool:
             args = zip(key, repeat(SA), repeat(win_params),
                        repeat(max_len), repeat(max_pos), repeat(1))
-            if 
-            return pool.starmap(calc_cARS, args)
+            if n_jobs is None or n_jobs > 1:
+                return pool.starmap(calc_cARS, args)
+            else:
+                return list(starmap(calc_cARS, args))
 
     win_params = init_win_params(win_params)
     SA.pop('win_start', None)
@@ -94,7 +96,10 @@ def calc_cMap(target_aa, SA_aa, ref_nt, win_params=None, max_len=np.inf, max_pos
         with Pool(n_jobs) as pool:
             args = zip(target_aa, repeat(SA_aa), repeat(ref_nt), repeat(win_params),
                        repeat(max_len), repeat(max_pos), repeat(1))
-            return pool.starmap(calc_cMap, args)
+            if n_jobs is None or n_jobs > 1:
+                return pool.starmap(calc_cMap, args)
+            else:
+                return list(starmap(calc_cMap, args))
 
     win_params = init_win_params(win_params)
     SA_aa.pop('win_start', None)
@@ -112,8 +117,8 @@ def calc_cMap(target_aa, SA_aa, ref_nt, win_params=None, max_len=np.inf, max_pos
 
         block_aa = longest_prefix(target_aa[pos:], SA_aa, max_len)[0]
         if not len(block_aa):
-            raise Exception('empty block at {}, suffix starts with: "{}"'
-                            .format(pos, target_aa[pos:pos+10]))
+            raise Exception('empty block at {}/{}, suffix starts with: "{}"'
+                            .format(pos, len(target_aa), target_aa[pos:pos+10]))
 
         gene, loc, block = most_freq_nt_prefix(block_aa, SA_aa, ref_nt)
         m = len(block_aa)
