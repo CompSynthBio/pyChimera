@@ -61,6 +61,8 @@ def calc_cARS(key, SA, win_params=None, max_len=np.inf, max_pos=1, n_jobs=None):
             warn('empty substring at {}/{}, suffix starts with: "{}"'
                 .format(pos, len(key), key[pos:pos+10]))
             cars_origin[pos] = -1
+            pos_queue[pos] = False
+            continue
 
         same = cars_origin == cars_origin[pos]
         if (np.mean(same) > max_pos) and (n > 1):
