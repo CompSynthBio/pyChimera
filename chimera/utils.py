@@ -1,6 +1,7 @@
 # Alon Diament, Tuller Lab, June 2022.
 
 from collections import Iterable
+import re
 import numpy as np
 
 
@@ -71,6 +72,7 @@ the_code = {
     'TTT': 'F',
 }
 nt2codon_dict = {k: chr(i) for i, k in enumerate(the_code.keys())}
+valid_re = re.compile('[^ACGTacgt]+')
 
 
 def nt2aa(seq_nt, validate_seq=True):
@@ -78,9 +80,9 @@ def nt2aa(seq_nt, validate_seq=True):
         # returning an empty string for bad seqs to preserve indexing
         seq_aa = [nt2aa(s)
                   if not validate_seq or
-                  ((len(s) % 3 == 0) and ('N' not in s.upper()))
-                  else ''
+                  is_valid_seq(s) else ''
                   for s in seq_nt]
+        print(f'validate_seq: ignored {sum([len(s) == 0 for s in seq_aa])} ambiguous sequences.')
         return seq_aa
 
     seq_nt = seq_nt.upper()
@@ -110,10 +112,10 @@ def nt2codon(seq_nt, validate_seq=True):
         # returning an empty string for bad seqs to preserve indexing
         seq_cod = [nt2codon(s)
                    if not validate_seq or
-                   ((len(s) % 3 == 0) and ('N' not in s.upper()))
-                   else ''
+                   is_valid_seq(s) else ''
                    for s in seq_nt]
-        return seq_cod 
+        print(f'validate_seq: ignored {sum([len(s) == 0 for s in seq_cod])} ambiguous sequences.')
+        return seq_cod
 
     if not len(seq_nt):
         return ''
@@ -155,3 +157,7 @@ def compare_seq(seq1, seq2):
 
 def is_str_iter(obj):
     return not isinstance(obj, str) and isinstance(obj, Iterable)
+
+
+def is_valid_seq(seq):
+    return valid_re.search(seq) is None
