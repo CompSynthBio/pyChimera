@@ -2,6 +2,7 @@
 
 from itertools import repeat
 from multiprocessing.pool import Pool
+from warnings import warn
 
 import numpy as np
 import pandas as pd
@@ -32,6 +33,7 @@ def calc_cARS(key, SA, win_params=None, max_len=np.inf, max_pos=1, n_jobs=None):
         with Pool(n_jobs) as pool:
             args = zip(key, repeat(SA), repeat(win_params),
                        repeat(max_len), repeat(max_pos), repeat(1))
+            if 
             return pool.starmap(calc_cARS, args)
 
     win_params = init_win_params(win_params)
@@ -54,8 +56,9 @@ def calc_cARS(key, SA, win_params=None, max_len=np.inf, max_pos=1, n_jobs=None):
         cars_vec[pos] = len(block)
 
         if not len(block):
-            raise Exception('empty substring at {}, suffix starts with: "{}"'
-                            .format(pos, key[pos:pos+10]))
+            warn('empty substring at {}/{}, suffix starts with: "{}"'
+                .format(pos, len(key), key[pos:pos+10]))
+            cars_origin[pos] = -1
 
         same = cars_origin == cars_origin[pos]
         if (np.mean(same) > max_pos) and (n > 1):
