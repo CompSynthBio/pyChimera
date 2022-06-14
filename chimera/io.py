@@ -4,7 +4,7 @@ import numpy as np
 from scipy.io import savemat, loadmat
 
 
-def save_SA(SA, path):
+def save_SA(path, SA):
     SA.pop('mask', None)
     SA.pop('homologs', None)
     np.savez_compressed(path, **SA)
@@ -16,7 +16,7 @@ def load_SA(path):
     return SA
 
 
-def save_matlab_SA(SA, path):
+def save_matlab_SA(path, SA):
     """ generating MATLAB variables: SA (n x 6 matrix), ref (string cell).
     """
     savemat(path,
@@ -33,4 +33,4 @@ def load_matlab_SA(path):
     return {'ref': [r[0] for r in np.ravel(SA_mat['ref'])],
             'ind': SA_mat['SA'][:, 1] - 1,
             'pos': SA_mat['SA'][:, 0] - 1,
-            'pos_from_stop': SA_mat['SA'][:, 3] - 1}
+            'pos_from_stop': SA_mat['SA'][:, 3]}
