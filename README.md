@@ -10,7 +10,7 @@ for the app and MATLAB implementation see the [relevant repository](https://gith
 
 Diament et al. ChimeraUGEM: unsupervised gene expression modeling in any given organism. [Bioinformatics](https://doi.org/10.1093/bioinformatics/btz080), 2019.
 
-Zure and Tuller. Exploiting hidden information interleaved in the redundancy of the genetic code without prior knowledge. [Bioinformatics](https://doi.org/10.1093/bioinformatics/btu797), 2015.
+Zur and Tuller. Exploiting hidden information interleaved in the redundancy of the genetic code without prior knowledge. [Bioinformatics](https://doi.org/10.1093/bioinformatics/btu797), 2015.
 
 ## Benchmark: Python vs. MATLAB
 
