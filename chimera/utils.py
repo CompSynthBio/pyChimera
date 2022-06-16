@@ -71,7 +71,7 @@ the_code = {
     'TTG': 'L',
     'TTT': 'F',
 }
-nt2codon_dict = {k: chr(i) for i, k in enumerate(the_code.keys())}
+nt2codon_dict = {k: chr(i+1) for i, k in enumerate(the_code.keys())}
 valid_re = re.compile('[^ACGTacgt]+')
 
 
@@ -85,10 +85,13 @@ def nt2aa(seq_nt, validate_seq=True):
         print(f'validate_seq: ignored {sum([len(s) == 0 for s in seq_aa])} ambiguous sequences.')
         return seq_aa
 
+    n = len(seq_nt)
+    n = n - n % 3
     seq_nt = seq_nt.upper()
     seq_aa = ''.join([the_code[seq_nt[i:i+3]]
-                      for i in range(0, len(seq_nt), 3)
-                      if seq_nt[i:i+3] in the_code])
+                      if seq_nt[i:i+3] in the_code
+                      else 'X'
+                      for i in range(0, n, 3)])
 
     n_nt = len(seq_nt) / 3
     n_aa = len(seq_aa)
@@ -120,9 +123,12 @@ def nt2codon(seq_nt, validate_seq=True):
     if not len(seq_nt):
         return ''
 
+    n = len(seq_nt)
+    n = n - n % 3
     seq_cod = ''.join([nt2codon_dict[seq_nt[i:i+3]]
-                       for i in range(0, len(seq_nt), 3)
-                       if seq_nt[i:i+3] in nt2codon_dict])
+                       if seq_nt[i:i+3] in nt2codon_dict
+                       else chr(0)
+                       for i in range(0, n, 3)])
 
     n_nt = len(seq_nt) / 3
     n_cod = len(seq_cod)
@@ -139,7 +145,7 @@ def codon2nt(seq_cod):
     if not len(seq_cod):
         return ''
 
-    codon_list = list(nt2codon_dict.keys())
+    codon_list = ['NNN'] + list(nt2codon_dict.keys())
 
     return ''.join([codon_list[ord(c)] for c in seq_cod])
 
