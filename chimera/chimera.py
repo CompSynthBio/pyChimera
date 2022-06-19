@@ -4,7 +4,7 @@ from itertools import repeat, starmap
 from multiprocessing.pool import Pool
 
 import numpy as np
-import pandas as pd
+# import pandas as pd
 
 from .suffix_array import longest_prefix, most_freq_nt_prefix, select_window
 from .utils import is_str_iter, nt2aa
