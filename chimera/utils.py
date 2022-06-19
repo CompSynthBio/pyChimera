@@ -87,7 +87,7 @@ def nt2aa(seq_nt, validate_seq=True):
 
     n = len(seq_nt)
     n = n - n % 3  # ignore partial codons
-    seq_nt = seq_nt.upper()
+    seq_nt = seq_nt.upper().replace('U', 'T')
     seq_aa = ''.join([the_code[seq_nt[i:i+3]]
                       if seq_nt[i:i+3] in the_code
                       else 'X'
@@ -125,6 +125,7 @@ def nt2codon(seq_nt, validate_seq=True):
 
     n = len(seq_nt)
     n = n - n % 3  # ignore partial codons
+    seq_nt = seq_nt.upper().replace('U', 'T')
     seq_cod = ''.join([nt2codon_dict[seq_nt[i:i+3]]
                        if seq_nt[i:i+3] in nt2codon_dict
                        else chr(0)
