@@ -2,7 +2,7 @@
 
 <img src="images/logo.png" width="150">
 
-this is a Python implementation of the Chimera algorithms, first proposed by the late Dr. Hadas Zur and Tamir Tuller (2015), and extended by (Diament et al., 2019). these algorithms can be used to predict the expression of a gene in an unsupervised manner, based solely on the coding sequence of the gene and the genome of the host. it can also be used to design genes for optimized expression in any host organism.
+this is a Python implementation of the Chimera algorithms, first proposed by the late Dr. Hadas Zur and Tamir Tuller (2015), and extended by (Diament et al., 2019). these algorithms can be used to predict the expression of a gene in an unsupervised manner, based solely on the coding sequence of the gene and the genome of the host. it can also be used to design genes for optimized expression in any sequenced host organism.
 
 for the app and MATLAB implementation see the [relevant repository](https://github.com/alondmnt/chimera/).
 
@@ -58,7 +58,7 @@ max_len = 40
 max_pos = 0.5
 ```
 
-### Analysis
+### Prediction / Analysis
 
 running cARS or PScARS on a gene requires two steps:
 
@@ -78,7 +78,7 @@ cars = calc_cARS(target_cod, SA_cod,
 
 this example demonstrates a run on the codon alphabet (the recommended approach for analyzing coding sequences), but cARS supports any of the 3 options (nt, aa, codon). the function also accepts an iterable of strings as the target sequence, and uses multiprocessing to run the batch efficiently.
 
-### Design
+### Engineering / Design
 
 similarly, running cMap or PScMap requires two steps:
 
