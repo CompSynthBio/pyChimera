@@ -12,6 +12,16 @@ Diament et al. ChimeraUGEM: unsupervised gene expression modeling in any given o
 
 Zur and Tuller. Exploiting hidden information interleaved in the redundancy of the genetic code without prior knowledge. [Bioinformatics](https://doi.org/10.1093/bioinformatics/btu797), 2015.
 
+## Algorithms
+
+- **ChimeraMap (cMap)**: an engineering algorithm, that generates for a given target peptide an optimized nucleotide sequence, made up of the minimal number of sequence blocks that appear in a given reference set of host genes. (Zur and Tuller, 2015)
+
+- **Position-Specific ChimeraMap (PScMap)**: extends the cMap algorithm and generates an optimized sequence that also takes into account the position of each sequence block in the target and in the reference genes. the hypothesis is that this constraint may capture additional regulatory signals that tend to appear in specific regions of the host's genes. (Diament et al., 2019)
+
+- **ChimeraARS (cARS)**: a prediction algorithm, that calculates the Average Repetitive Substring (ARS) score, which measures for a target gene and a reference set of host genes, the average length of the maximal common sub-sequences with the host at every position in the target. this score increases as the target gene is predicted to be more similar / adapted to the reference genes / host. (Zur and Tuller, 2015)
+
+- **Position-Specific ChimeraARS (PScARS)**: calculates an extended version of the ARS score that takes into account the position of each sub-sequence in the target and in the reference genes. (Diament et al., 2019)
+
 ## Benchmark: Python vs. MATLAB
 
 the following table shows the runtime in seconds for each algorithm, when using the Python package with multiprocessing, on a single core, or in MATLAB. this test was done on a 2015 MacBook Pro.
