@@ -4,7 +4,7 @@
 
 this is a Python implementation of the Chimera algorithms, first proposed by the late Dr. Hadas Zur and Tamir Tuller (2015), and extended by (Diament et al., 2019). these algorithms can be used to predict the expression of a gene in an unsupervised manner, based solely on the coding sequence of the gene and the genome of the host. it can also be used to design genes for optimized expression in any sequenced host organism.
 
-for the app and MATLAB implementation see the [relevant repository](https://github.com/alondmnt/chimera/).
+for the app and MATLAB implementation go to the [ChimeraUGEM website](https://www.cs.tau.ac.il/~tamirtul/ChimeraUGEM/).
 
 ## How to cite
 
