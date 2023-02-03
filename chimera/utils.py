@@ -151,6 +151,22 @@ def codon2nt(seq_cod):
     return ''.join([codon_list[ord(c)] for c in seq_cod])
 
 
+def sample_seqs_from_blocks(all_blocks, n, random_seed=42):
+    """
+    generate multiple synonymous sequences by sampling different
+    combinations of blocks from `all_blocks`. return `n` sampled
+    sequences.
+    """
+    np.random.seed(random_seed)
+
+    seqs = []
+    for _ in range(n):
+        seqs.append(''.join([np.random.choice(b, 1)[0]
+                             for b in all_blocks]))
+
+    return seqs
+
+
 def rand_seq(n):
     return ''.join(np.random.choice(['A', 'C', 'G', 'T'], size=n))
 
