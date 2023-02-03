@@ -6,7 +6,7 @@ from multiprocessing.pool import Pool
 import numpy as np
 # import pandas as pd
 
-from .suffix_array import longest_prefix, most_freq_nt_prefix, select_window
+from .suffix_array import longest_prefix, most_freq_nt_prefix, get_all_nt_blocks, select_window
 from .utils import is_str_iter, nt2aa
 
 def_win_params = {'size': 40, 'center': 0, 'by_start': True, 'by_stop': True}
@@ -79,7 +79,8 @@ def calc_cARS(key, SA, win_params=None, max_len=np.inf, max_pos=1, n_jobs=None):
     return cars
 
 
-def calc_cMap(target_aa, SA_aa, ref_nt, win_params=None, max_len=np.inf, max_pos=1, n_jobs=None):
+def calc_cMap(target_aa, SA_aa, ref_nt, win_params=None, max_len=np.inf, max_pos=1,
+              block_select='most_freq', n_jobs=None):
     """ compute an optimal NT sequence for a target AA sequence based on
         the ChimeraMap (Zur and Tuller, 2015) algorithm. when `win_params`
         is given, compute the position-specific ChimeraMap (Diament et al., 2019).
@@ -92,6 +93,10 @@ def calc_cMap(target_aa, SA_aa, ref_nt, win_params=None, max_len=np.inf, max_pos
             are larger than [max_len] and filter the entire gene of origin.
         max_pos: if provided, cMap will detect genes that occur in a fraction
             of positions that is larger than [max_pos] and filter them.
+        block_select: the method to select among synonymous sequence blocks.
+            the 'all' method outputs all equally-optimal unique synonymous
+            blocks, and in this case the `max_pos` param is ignored. value
+            in {'most_freq', 'all'}, defaults to 'most_freq'.
 
         Alon Diament / Tuller Lab, July 2015 (MATLAB), June 2022 (Python).
     """
@@ -119,12 +124,20 @@ def calc_cMap(target_aa, SA_aa, ref_nt, win_params=None, max_len=np.inf, max_pos
             select_window(SA_aa, win_params, pos, pos-n)
 
         block_aa = longest_prefix(target_aa[pos:], SA_aa, max_len)[0]
-        if not len(block_aa):
-            raise Exception('empty block at {}/{}, suffix starts with: "{}"'
-                            .format(pos, len(target_aa), target_aa[pos:pos+10]))
-
-        gene, loc, block = most_freq_nt_prefix(block_aa, SA_aa, ref_nt)
         m = len(block_aa)
+        if m == 0:
+            raise ValueError('empty block at {}/{}, suffix starts with: "{}"'
+                             .format(pos, len(target_aa), target_aa[pos:pos+10]))
+
+        if block_select == 'most_freq':
+            gene, loc, block = most_freq_nt_prefix(block_aa, SA_aa, ref_nt)
+        elif block_select == 'all':
+            B.append(np.unique(get_all_nt_blocks(block_aa, SA_aa, ref_nt)[0]))
+            pos += m
+            continue
+        else:
+            raise ValueError('block_select must be in {"most_freq", "all"}')
+
         cmap_origin[0, pos:pos+m] = gene
         cmap_origin[1, pos:pos+m] = len(B)
         B.append([gene, loc, block])
@@ -142,10 +155,13 @@ def calc_cMap(target_aa, SA_aa, ref_nt, win_params=None, max_len=np.inf, max_pos
         else:
             pos += m
 
+    if block_select == 'all':
+        return B
+
     target_opt = ''.join([b[2] for b in B])
 
     if nt2aa(target_opt) != target_aa:
-        raise Exception('non-syonymous optimization')
+        raise ValueError('non-syonymous optimization')
 
     return target_opt  #, pd.DataFrame(B, columns=['gene', 'loc', 'block'])
 

@@ -87,6 +87,17 @@ def most_freq_nt_prefix(pref_aa, SA_aa, ref_nt):
     """ finds the most frequent *NT* prefix in `SA_aa` that codes the given 
         AA prefix `pref_aa`.
     """
+    all_blocks, i_prefix = get_all_nt_blocks(pref_aa, SA_aa, ref_nt)
+
+    block = Counter(sorted(all_blocks)).most_common(1)[0][0]  # first in lexicographic order
+    mostfreq = [i for i, b in zip(i_prefix, all_blocks) if block == b][0]
+    gene = SA_aa['ind'][mostfreq]
+    loc = SA_aa['pos'][mostfreq]
+
+    return gene, loc, block
+
+
+def get_all_nt_blocks(pref_aa, SA_aa, ref_nt):
     n = len(pref_aa)
     left = search_suffix(pref_aa, SA_aa)
     right = search_suffix(pref_aa + '~', SA_aa)
@@ -98,12 +109,7 @@ def most_freq_nt_prefix(pref_aa, SA_aa, ref_nt):
     all_blocks = [get_nt_prefix(SA_aa, ref_nt, i, n)
                   for i in i_prefix]
 
-    block = Counter(sorted(all_blocks)).most_common(1)[0][0]  # first in lexicographic order
-    mostfreq = [i for i, b in zip(i_prefix, all_blocks) if block == b][0]
-    gene = SA_aa['ind'][mostfreq]
-    loc = SA_aa['pos'][mostfreq]
-
-    return gene, loc, block
+    return all_blocks, i_prefix
 
 
 def select_window(SA, win_params, pos_start, pos_stop):
