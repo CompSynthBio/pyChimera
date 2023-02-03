@@ -1,6 +1,6 @@
 # Alon Diament, Tuller Lab, June 2022.
 
-from collections import Iterable
+from typing import Iterable
 import re
 import numpy as np
 
