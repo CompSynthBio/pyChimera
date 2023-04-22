@@ -12,7 +12,7 @@ from .utils import is_str_iter, nt2aa
 def_win_params = {'size': 40, 'center': 0, 'by_start': True, 'by_stop': True}
 
 
-def calc_cARS(key, SA, win_params=None, max_len=np.inf, max_pos=1, n_jobs=None):
+def calc_cARS(key, SA, win_params=None, max_len=np.inf, max_pos=1, return_vec=False, n_jobs=None):
     """ compute the ChimeraARS (Average Repetitive Substring, Zur and Tuller,
         2015) for a given key. when `win_params` is given, compute the
         position-specific ChimeraARS (Diament et al., 2019).
@@ -25,13 +25,16 @@ def calc_cARS(key, SA, win_params=None, max_len=np.inf, max_pos=1, n_jobs=None):
             are larger than [max_len] and filter the entire gene of origin.
         max_pos: if provided, cARS will detect genes that occur in a fraction
             of positions that is larger than [max_pos] and filter them.
+        return_vec: if True, return the cARS vector instead of the mean.
+        n_jobs: number of parallel jobs to run. if None, use all available cores.
 
         Alon Diament / Tuller Lab, July 2015 (MATLAB), June 2022 (Python).
     """
     if is_str_iter(key):
         with Pool(n_jobs) as pool:
             args = zip(key, repeat(SA), repeat(win_params),
-                       repeat(max_len), repeat(max_pos), repeat(1))
+                       repeat(max_len), repeat(max_pos), repeat(return_vec),
+                       repeat(1))
             if n_jobs is None or n_jobs > 1:
                 return pool.starmap(calc_cARS, args)
             else:
@@ -74,9 +77,10 @@ def calc_cARS(key, SA, win_params=None, max_len=np.inf, max_pos=1, n_jobs=None):
         else:
             pos_queue[pos] = False  # success
 
-    cars = np.mean(cars_vec)
+    if return_vec:
+        return cars_vec
 
-    return cars
+    return np.mean(cars_vec)
 
 
 def calc_cMap(target_aa, SA_aa, ref_nt, win_params=None, max_len=np.inf, max_pos=1,
@@ -97,6 +101,7 @@ def calc_cMap(target_aa, SA_aa, ref_nt, win_params=None, max_len=np.inf, max_pos
             the 'all' method outputs all equally-optimal unique synonymous
             blocks, and in this case the `max_pos` param is ignored. value
             in {'most_freq', 'all'}, defaults to 'most_freq'.
+        n_jobs: number of parallel jobs to run. if None, use all available cores.
 
         Alon Diament / Tuller Lab, July 2015 (MATLAB), June 2022 (Python).
     """
