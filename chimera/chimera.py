@@ -48,7 +48,7 @@ def calc_cARS(key, SA, win_params=None, max_len=np.inf, max_pos=1, return_vec=Fa
     if n == 0:
         return np.nan
     cars_vec = np.zeros(n)
-    cars_origin = -np.ones(n, dtype=np.int)
+    cars_origin = -np.ones(n, dtype=int)
     SA['homologs'] = set()  # empty mask
 
     pos_queue = np.ones(n, dtype=bool)
@@ -84,7 +84,7 @@ def calc_cARS(key, SA, win_params=None, max_len=np.inf, max_pos=1, return_vec=Fa
 
 
 def calc_cMap(target_aa, SA_aa, ref_nt, win_params=None, max_len=np.inf, max_pos=1,
-              block_select='most_freq', n_jobs=None):
+              block_select='most_freq', min_blocks=1, n_jobs=None):
     """ compute an optimal NT sequence for a target AA sequence based on
         the ChimeraMap (Zur and Tuller, 2015) algorithm. when `win_params`
         is given, compute the position-specific ChimeraMap (Diament et al., 2019).
@@ -120,7 +120,7 @@ def calc_cMap(target_aa, SA_aa, ref_nt, win_params=None, max_len=np.inf, max_pos
 
     n = len(target_aa)
     B = []  # Chimera blocks
-    cmap_origin = -np.ones((2, n), dtype=np.int)
+    cmap_origin = -np.ones((2, n), dtype=int)
     SA_aa['homologs'] = set()  # empty mask
 
     pos = 0  # position in target
@@ -137,8 +137,14 @@ def calc_cMap(target_aa, SA_aa, ref_nt, win_params=None, max_len=np.inf, max_pos
         if block_select == 'most_freq':
             gene, loc, block = most_freq_nt_prefix(block_aa, SA_aa, ref_nt)
         elif block_select == 'all':
-            B.append(np.unique(get_all_nt_blocks(block_aa, SA_aa, ref_nt)[0]))
-            pos += m
+            while len(block_aa) > 0:
+                blocks = np.unique(get_all_nt_blocks(block_aa, SA_aa, ref_nt)[0])
+                if len(blocks) >= min_blocks:
+                    break
+                block_aa = block_aa[:-1]
+
+            B.append(blocks)
+            pos += len(block_aa)
             continue
         else:
             raise ValueError('block_select must be in {"most_freq", "all"}')
