@@ -83,20 +83,6 @@ def longest_prefix(key, SA, max_len=np.inf):
     return pref, pind
 
 
-def most_freq_nt_prefix(pref_aa, SA_aa, ref_nt):
-    """ finds the most frequent *NT* prefix in `SA_aa` that codes the given 
-        AA prefix `pref_aa`.
-    """
-    all_blocks, i_prefix = get_all_nt_blocks(pref_aa, SA_aa, ref_nt)
-
-    block = Counter(sorted(all_blocks)).most_common(1)[0][0]  # first in lexicographic order
-    mostfreq = [i for i, b in zip(i_prefix, all_blocks) if block == b][0]
-    gene = SA_aa['ind'][mostfreq]
-    loc = SA_aa['pos'][mostfreq]
-
-    return gene, loc, block
-
-
 def get_all_nt_blocks(pref_aa, SA_aa, ref_nt):
     """ finds the all *NT* prefixes in `SA_aa` that codes the given
             AA prefix `pref_aa`.
