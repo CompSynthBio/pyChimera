@@ -98,11 +98,13 @@ def most_freq_nt_prefix(pref_aa, SA_aa, ref_nt):
 
 
 def get_all_nt_blocks(pref_aa, SA_aa, ref_nt):
+    """ finds the all *NT* prefixes in `SA_aa` that codes the given
+            AA prefix `pref_aa`.
+    """
     n = len(pref_aa)
     left = search_suffix(pref_aa, SA_aa)
     right = search_suffix(pref_aa + '~', SA_aa)
-    if left == right:
-        right += 1
+
     i_prefix = [i for i in range(left, right)
                 if not is_suffix_masked(SA_aa, i)]
 
