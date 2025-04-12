@@ -101,6 +101,11 @@ def calc_cMap(target_aa, SA_aa, ref_nt, win_params=None, max_len=np.inf, max_pos
             the 'all' method outputs all equally-optimal unique synonymous
             blocks, and in this case the `max_pos` param is ignored. value
             in {'most_freq', 'all'}, defaults to 'most_freq'.
+        n_seqs: number of sequences to generate
+        min_blocks: Minimum number of unique nucleotide blocks per amino acid block.
+            Set to >1 when generating multiple sequence variants to make variants more different
+            from each other.
+        return_vec: if True, return a vector with all possible nucleotide blocks.
         n_jobs: number of parallel jobs to run. if None, use all available cores.
 
         Alon Diament / Tuller Lab, July 2015 (MATLAB), June 2022 (Python).
@@ -121,10 +126,9 @@ def calc_cMap(target_aa, SA_aa, ref_nt, win_params=None, max_len=np.inf, max_pos
 
     n = len(target_aa)
     SA_aa['homologs'] = set()  # empty mask
+    homologs = np.full(1, -1)  # initialize
 
-    pos_pass = False
-
-    while not pos_pass:
+    while homologs.size > 0:
         all_blocks = []
         cmap_origin = np.zeros(len(SA_aa["ind"]), dtype=int)
         pos = 0  # position in target
@@ -137,7 +141,7 @@ def calc_cMap(target_aa, SA_aa, ref_nt, win_params=None, max_len=np.inf, max_pos
                 raise ValueError('empty block at {}/{}, suffix starts with: "{}"'
                                  .format(pos, len(target_aa), target_aa[pos:pos + 10]))
 
-            prev_blocks = np.empty(shape=0)
+            prev_blocks = []
             prev_block_aa = ""
             while len(block_aa) > 0:
                 blocks, i_prefixes = get_all_nt_blocks(block_aa, SA_aa, ref_nt)
@@ -165,8 +169,6 @@ def calc_cMap(target_aa, SA_aa, ref_nt, win_params=None, max_len=np.inf, max_pos
 
         homologs = np.argwhere(cmap_origin / n > max_pos).flatten()
         SA_aa['homologs'].update(homologs)
-        if homologs.size == 0:
-            pos_pass = True
 
     if return_vec:
         return all_blocks

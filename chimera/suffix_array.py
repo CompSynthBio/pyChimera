@@ -1,6 +1,6 @@
 # Alon Diament, Tuller Lab, June 2022.
 
-from collections import defaultdict, Counter
+from collections import defaultdict
 from itertools import repeat
 import math
 from multiprocessing.pool import Pool
