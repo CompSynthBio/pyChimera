@@ -22,6 +22,8 @@ Zur and Tuller. Exploiting hidden information interleaved in the redundancy of t
 
 - **Position-Specific ChimeraARS (PScARS)**: calculates an extended version of the ARS score that takes into account the position of each sub-sequence in the target and in the reference genes. (Diament et al., 2019)
 
+- **Multi-sequence ChimeraMap (MScMap)**: generates multiple optimized variants of the target protein for use in multi-copy systems. (Burghardt et al., 2025)
+
 ## Benchmark: Python vs. MATLAB
 
 the following table shows the runtime in seconds for each algorithm, when using the Python package with multiprocessing, on a single core, or in MATLAB. this test was done on a 2015 MacBook Pro.
@@ -90,7 +92,7 @@ this example demonstrates a run on the codon alphabet (the recommended approach 
 
 ### Engineering / Design
 
-similarly, running cMap or PScMap requires two steps:
+similarly, running cMap, PScMap or MScMap requires two steps:
 
 ```python
 SA_aa = build_suffix_array(ref_aa)
@@ -105,6 +107,10 @@ target_optim_nt = calc_cMap(target_aa, SA_aa, ref_nt,
 # Position-Specific Chimera Map (PScMap)
 target_optim_nt = calc_cMap(target_aa, SA_aa, ref_nt,
     win_params=win_params, max_len=max_len, max_pos=max_pos)
+
+# Multi-sequence Chimera Map (MScMap)
+target_optim_nts = calc_cMap(target_aa, SA_aa, ref_nt,
+    win_params=win_params, max_len=max_len, max_pos=max_pos, n_seqs=5, min_blocks=2)
 ```
 
 this function also accepts an iterable of strings as the target sequence, and uses multiprocessing to run the batch efficiently.
