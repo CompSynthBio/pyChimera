@@ -185,7 +185,8 @@ def calc_cMap(target_aa, SA_aa, ref_nt, win_params=None, max_len=np.inf, max_pos
 
     if (np.array(nt2aa(target_opt)) != target_aa).any():
         raise ValueError('non-syonymous optimization')
-
+    if n_seqs == 1:
+        return target_opt[0]
     return target_opt
 
 
