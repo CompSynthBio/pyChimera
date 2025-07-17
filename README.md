@@ -42,7 +42,13 @@ the following table shows the runtime in seconds for each algorithm, when using 
 
 ## 5-min Tutorial
 
-first, let's generate some random reference set of sequences, and a random query gene that will be used in the next two examples.
+first, install chimera via
+
+```console
+pip install git+https://github.com/CompSynthBio/pyChimera
+```
+
+let's generate some random reference set of sequences, and a random query gene that will be used in the next two examples.
 
 ```python
 from chimera import *
