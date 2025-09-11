@@ -160,8 +160,10 @@ def calc_cMap(target_aa, SA_aa, ref_nt, win_params=None, max_len=np.inf, max_pos
 
             if block_select == 'most_freq':
                 blocks = [b[0] for b in Counter(sorted(blocks)).most_common(n_seqs)]
-            else:
+            elif block_select == 'all':
                 blocks = list(set(blocks))
+            else:
+                raise ValueError(f'Invalid block_select {block_select}. Must be "most_freq" or "all"')
 
             cmap_origin[[SA_aa['ind'][pid] for pid in i_prefixes]] += len(block_aa)
             all_blocks.append(blocks)
