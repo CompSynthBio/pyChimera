@@ -135,3 +135,15 @@ save_matlab_SA(path, SA)
 # import from MATLAB
 SA = load_matlab_SA(path)
 ```
+
+### Command line usage
+
+All algorithms can also be run directly via the command line:
+
+```console
+chimera cars --reference ref.fasta --target target.fasta --output out.csv
+
+chimera cmap --reference ref.fasta --target target_aa.fasta --output out.fasta
+```
+
+See `--help` for usage.

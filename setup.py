@@ -8,4 +8,5 @@ setup(
             'numpy',
             'scipy'
         ],
+    entry_points={"console_scripts": ["chimera=chimera.cli:main"]},
 )
