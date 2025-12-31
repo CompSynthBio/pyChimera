@@ -4,15 +4,10 @@
 
 <img src="images/logo.png" width="150">
 
-this is a Python implementation of the Chimera algorithms, first proposed by the late Dr. Hadas Zur and Tamir Tuller (2015), and extended by (Diament et al., 2019). these algorithms can be used to predict the expression of a gene in an unsupervised manner, based solely on the coding sequence of the gene and the genome of the host. it can also be used to design genes for optimized expression in any sequenced host organism.
+this is a Python implementation of the Chimera algorithms, first proposed by the late Dr. Hadas Zur and Tamir Tuller (2015), and extended by Diament et al. (2019) and Burghardt et al. (2025). These algorithms can be used to predict the expression of a gene in an unsupervised manner, based solely on the coding sequence of the gene and the genome of the host. They can also be used to design genes for optimized expression in any sequenced host organism.
 
-For the latest Python / MATLAB / Stand-alone version go to the [ChimeraUGEM website](https://www.cs.tau.ac.il/~tamirtul/ChimeraUGEM/).
-
-## How to cite
-
-Diament et al. ChimeraUGEM: unsupervised gene expression modeling in any given organism. [Bioinformatics](https://doi.org/10.1093/bioinformatics/btz080), 2019.
-
-Zur and Tuller. Exploiting hidden information interleaved in the redundancy of the genetic code without prior knowledge. [Bioinformatics](https://doi.org/10.1093/bioinformatics/btu797), 2015.
+For the MATLAB / Stand-alone version go to the [ChimeraUGEM website](https://www.cs.tau.ac.il/~tamirtul/ChimeraUGEM/).
+A webserver is available [here](https://chimeraugem.org/).
 
 ## Algorithms
 
@@ -26,21 +21,15 @@ Zur and Tuller. Exploiting hidden information interleaved in the redundancy of t
 
 - **Multi-sequence ChimeraMap (MScMap)**: generates multiple optimized variants of the target protein for use in multi-copy systems. (Burghardt et al., 2025)
 
-## Benchmark: Python vs. MATLAB
+## How to cite
 
-the following table shows the runtime in seconds for each algorithm, when using the Python package with multiprocessing, on a single core, or in MATLAB. this test was done on a 2015 MacBook Pro.
+Zur and Tuller. Exploiting hidden information interleaved in the redundancy of the genetic code without prior knowledge. [Bioinformatics](https://doi.org/10.1093/bioinformatics/btu797), 2015.
 
-| algorithm               | Python-multi | Python-single | MATLAB |
-|-------------------------|--------------|---------------|--------|
-| cARS*                   | 137          | 404           | 756    |
-| cMap*                   | 39           | 115           | 201    |
-| Position-Specific cARS* | 229          | 626           | 1403   |
-| Position-Specific cMap* | 42           | 134           | 326    |
-| build suffix array**    | 12.8         | 28.3          | 4.4    |
+If you used position-specific Chimera or the Stand-alone version:
+Diament et al. ChimeraUGEM: unsupervised gene expression modeling in any given organism. [Bioinformatics](https://doi.org/10.1093/bioinformatics/btz080), 2019.
 
-(*) whole genome run on 4139 *E. coli* genes, including homologs filtering.
-
-(**) in MATLAB this is implemented using compiled C-code.
+If you used MScMap or the webserver:
+Burghardt et al. Designing genetically stable multicopy gene constructs with the ChimeraUGEM web server. [NAR Genomics and Bioinformatics](https://doi.org/10.1093/nargab/lqaf191), 2025.
 
 ## 5-min Tutorial
 
@@ -149,3 +138,19 @@ chimera cmap --reference ref.fasta --target target_aa.fasta --output out.fasta
 ```
 
 See `--help` for usage.
+
+## Benchmark: Python vs. MATLAB
+
+the following table shows the runtime in seconds for each algorithm, when using the Python package with multiprocessing, on a single core, or in MATLAB. this test was done on a 2015 MacBook Pro.
+
+| algorithm               | Python-multi | Python-single | MATLAB |
+|-------------------------|--------------|---------------|--------|
+| cARS*                   | 137          | 404           | 756    |
+| cMap*                   | 39           | 115           | 201    |
+| Position-Specific cARS* | 229          | 626           | 1403   |
+| Position-Specific cMap* | 42           | 134           | 326    |
+| build suffix array**    | 12.8         | 28.3          | 4.4    |
+
+(*) whole genome run on 4139 *E. coli* genes, including homologs filtering.
+
+(**) in MATLAB this is implemented using compiled C-code.
